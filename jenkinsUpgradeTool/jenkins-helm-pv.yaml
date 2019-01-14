@@ -1,0 +1,24 @@
+## LORD JESUS CHRIST LOVE EVERY ONE
+#### Code in the Name of LORD JESUS CHRIST
+apiVersion: v1
+kind: List
+items:
+- kind: PersistentVolume
+  apiVersion: v1
+  metadata:
+    name: jenkinsName
+    annotations:
+      volume.beta.kubernetes.io/storage-class: "slow"
+    labels:
+      myapp: jenkinsName
+  spec:
+    capacity:
+      storage: 10Gi
+    accessModes:
+      - ReadWriteMany
+    persistentVolumeReclaimPolicy: Retain
+    nfs:
+      path: /data/nfs/jenkinsName
+      server: pvServer
+
+

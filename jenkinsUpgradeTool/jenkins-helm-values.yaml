@@ -1,0 +1,81 @@
+fullnameOverride: jenkinsName
+Persistence:
+  Size: "10Gi"
+  AccessMode: "ReadWriteMany"
+  Annotations:
+    volume.beta.kubernetes.io/storage-class: "slow"
+rbac:
+  serviceAccountName: "cluster-admin-sa"
+
+Master:
+  ImageTag: "lts-alpine"
+  HostName: "jenkinsURL"
+  Ingress:
+    Annotations:
+      ##ingress.kubernetes.io/force-ssl-redirect: "true"
+      kubernetes.io/ingress.allow-http: "false"
+      nginx.ingress.kubernetes.io/rewrite-target: "/"
+    TLS:
+    - hosts:
+      - jenkinsURL
+  AdminUser: "arch"
+  AdminPassword: "zhuyesujidu"
+  SecurityRealm: |
+    <securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
+      <disableSignup>true</disableSignup>
+      <enableCaptcha>false</enableCaptcha>
+    </securityRealm>
+  AuthorizationStrategy: |
+    <authorizationStrategy class="hudson.security.ProjectMatrixAuthorizationStrategy">
+      <permission>com.cloudbees.plugins.credentials.CredentialsProvider.View:authenticated</permission>
+      <permission>hudson.model.Hudson.Administer:arch</permission>
+      <permission>hudson.model.Hudson.Read:authenticated</permission>
+      <permission>hudson.model.Item.Build:authenticated</permission>
+      <permission>hudson.model.Item.Cancel:authenticated</permission>
+      <permission>hudson.model.Item.Configure:authenticated</permission>
+      <permission>hudson.model.Item.Create:authenticated</permission>
+      <permission>hudson.model.Item.Delete:authenticated</permission>
+      <permission>hudson.model.Item.Discover:authenticated</permission>
+      <permission>hudson.model.Item.Move:authenticated</permission>
+      <permission>hudson.model.Item.Read:authenticated</permission>
+      <permission>hudson.model.Item.Workspace:authenticated</permission>
+      <permission>hudson.model.View.Read:authenticated</permission>
+    </authorizationStrategy>
+  InstallPlugins:
+    - kubernetes:1.14.2
+    - workflow-job:2.31
+    - workflow-aggregator:2.6
+    - credentials-binding:1.17
+    - git:3.9.1
+    - http_request:1.8.22
+    - pipeline-utility-steps:2.2.0
+    - matrix-auth:2.3
+  ScriptApproval:
+    - field groovy.lang.Script binding
+    - method groovy.lang.GroovyObject getProperty java.lang.String
+    - method java.io.File exists
+    - method java.io.File getAbsolutePath
+    - method java.lang.String indexOf java.lang.String int
+    - method java.net.HttpURLConnection setRequestMethod java.lang.String
+    - method java.net.URL openConnection
+    - method java.net.URLConnection addRequestProperty java.lang.String java.lang.String
+    - method java.net.URLConnection getInputStream
+    - method java.util.Collection remove java.lang.Object
+    - method jenkins.model.Jenkins getGlobalNodeProperties
+    - method org.jenkinsci.plugins.workflow.support.actions.EnvironmentAction getEnvironment
+    - new groovy.util.AntBuilder
+    - new java.io.File java.lang.String
+    - new java.lang.RuntimeException java.lang.String
+    - staticMethod java.lang.System getProperty java.lang.String
+    - staticMethod java.lang.System getenv java.lang.String
+    - staticMethod jenkins.model.Jenkins getInstance
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods eachFile java.io.File groovy.lang.Closure
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getText java.io.File
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getText java.io.InputStream
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getText java.net.URL java.util.Map
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods println groovy.lang.Closure java.lang.Object
+    - staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods toURL java.lang.String
+  RunAsUser: 1000
+  FsGroup: 1000
+  ServiceType: "ClusterIP"
+
